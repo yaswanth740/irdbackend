@@ -23,11 +23,30 @@ namespace BackendAPI.Controllers
 
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Distribution>>> GetDistribution()
+        public async Task<ActionResult<IEnumerable<Distrribution_count>>> GetDistribution()
         {
-            return await _context.Distributions.ToListAsync();
+            string[] status = new string[] { "Ready for cm review", "Ready for email", "Ready for print" };
+            List<Distrribution_count> results = new List<Distrribution_count>();
+            foreach(string ht in status)
+            {
+                int count=_context.Distributions.Where(lc=>lc.current_status.Equals(ht)).Count();
+                Distrribution_count obj = new Distrribution_count();
+                obj.count = count;
+
+                obj.status = ht;
+                results.Add(obj);
+
+            }
+            return results;
+            //return await _context.Distributions.ToListAsync();
 
         }
+        [HttpGet("Gettotaldata")]
+        public async Task<ActionResult<IEnumerable<Distribution>>> GetDistributions()
+        {
+            return await _context.Distributions.ToListAsync();
+        }
+
 
         [HttpGet("GetStatus/{status}")]
         public async Task<ActionResult<IEnumerable<Distribution>>> getstatus(string status)
